@@ -1,21 +1,34 @@
 // Donut Javascript Code inspired from https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
 
+const R1 = 1
+const R2 = 2
+const K1 = 2
+
+const THETA_STEP = 0.2
+const PHI_STEP = 0.1
+
 const renderContainer = document.querySelector('.render-container')
 
-let timer = Date.now()
-
-let counter = 0;
-
-function donutAnimation() {
-  const diff = Date.now() - timer
-  timer = Date.now()
-  counter++;
-  if (counter > 10) {
-    const fps = Math.round((1 / (diff / 1000))).toString() + ' FPS'
-    renderContainer.innerHTML = fps
-    counter = 0;
+function animateDonut() {
+  for (let theta = 0; theta < 2 * Math.PI; theta += THETA_STEP)
+  {
+    for (let phi = 0; phi < 2 * Math.PI ; phi += PHI_STEP)
+    {
+      const x = (R2 + R1 * Math.cos(theta)) * Math.cos(phi)
+      const y = R1 * Math.sin(theta)
+      const z = -(R2 + R1 * Math.cos(theta) * Math.sin(phi))
+      
+      console.log(theta, phi)
+    }
   }
-  requestAnimationFrame(donutAnimation)
 }
 
-requestAnimationFrame(donutAnimation)
+
+/*
+
+  Creer stucture donut
+  Itérer sur les points
+  Créer projection
+  Créer lumière
+  Rendu vers les caractères ASCII : .,-~:;=!*#$@
+*/
