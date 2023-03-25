@@ -3,7 +3,7 @@ body {
   padding: 0;
 }
 
-.render-wrapper {
+#render-wrapper {
   height: 100vh;
   width: 100vw;
   background-color: #0b0b0e;
@@ -13,4 +13,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#render-canvas {
+  height: 400px;
+  width: 400px;
 }
