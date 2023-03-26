@@ -10,12 +10,14 @@ body {
   overflow: hidden;
   color: #f0f0f0;
   font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#render-canvas {
-  height: 400px;
-  width: 400px;
+#render-div {
+  height: 800px;
+  width: 800px;
 }
