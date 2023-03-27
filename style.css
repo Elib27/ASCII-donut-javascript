@@ -8,16 +8,13 @@ body {
   width: 100vw;
   background-color: #0b0b0e;
   overflow: hidden;
+  white-space: nowrap;
   color: #f0f0f0;
   font-family: monospace;
   font-size: 12px;
+
   letter-spacing: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#render-div {
-  height: 800px;
-  width: 800px;
 }
