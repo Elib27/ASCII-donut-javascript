@@ -4,7 +4,7 @@ const screen_size = 50 // height and width of projection screen
 
 const R1 = 1 // radius of the tube (tore) 
 const R2 = 2 // radius of the tore (minus 2*R1)
-const Zoff = 6 // distance between the projection screen and the tore
+const Zoff = 8 // distance between the projection screen and the tore
 const K1 = screen_size * Zoff * 3 / (8 * (R1 + R2)) // distance between the camera and the projection screen
 
 const THETA_STEP = 0.02
@@ -58,7 +58,7 @@ function animateDonut(A, B) {
 }
 
 const CUBE_SIZE = 4
-const CUBE_STEP = 0.1
+const CUBE_STEP = 0.05
 
 function animateCube(A, B) {
 
@@ -70,39 +70,71 @@ function animateCube(A, B) {
   const cosB = Math.cos(B)
   const sinB = Math.sin(B)
   
-  for (let Xaxis = -CUBE_SIZE / 2; Xaxis <= CUBE_SIZE / 2; Xaxis += CUBE_STEP) {
-    for (let Yaxis = -CUBE_SIZE / 2; Yaxis <= CUBE_SIZE / 2; Yaxis += CUBE_STEP) {
-      for (let Zaxis = -CUBE_SIZE / 2; Zaxis <= CUBE_SIZE / 2; Zaxis += CUBE_STEP){
+  for (let side = 0; side < 6; side++) {
+    for (let a = 0; a < CUBE_SIZE; a += CUBE_STEP){
+      for (let b = 0; b < CUBE_SIZE; b += CUBE_STEP)
+      {
+        let xs, ys, zs
+        let normal = []
+
+        switch (side) {
+          case 0 :
+            xs = a - CUBE_SIZE / 2
+            ys = b - CUBE_SIZE / 2
+            zs = - CUBE_SIZE / 2
+            normal = [0, 0, -1]
+            break
+          case 1 :
+            xs = a - CUBE_SIZE / 2
+            ys = CUBE_SIZE / 2
+            zs = b - CUBE_SIZE / 2
+            normal = [0, 1, 0]
+            break
+          case 2 :
+            xs = CUBE_SIZE / 2
+            ys = a - CUBE_SIZE / 2
+            zs = b - CUBE_SIZE / 2
+            normal = [1, 0, 0]
+            break
+          case 3 :
+            xs = a - CUBE_SIZE / 2
+            ys = - CUBE_SIZE / 2
+            zs = b - CUBE_SIZE / 2
+            normal = [0, -1, 0]
+            break
+          case 4 :
+            xs = a - CUBE_SIZE / 2
+            ys = b - CUBE_SIZE / 2
+            zs = CUBE_SIZE / 2
+            normal = [0, 0, 1]
+            break
+          case 5 :
+            xs = - CUBE_SIZE / 2
+            ys = a - CUBE_SIZE / 2
+            zs = b - CUBE_SIZE / 2
+            normal = [-1, 0, 0]
+            break
+        }
         
-        // const onCubeFace = (Math.abs(Xaxis) === CUBE_SIZE / 2) || (Math.abs(Yaxis) === CUBE_SIZE / 2) || (Math.abs(Zaxis) === CUBE_SIZE / 2)
-        // if (!onCubeFace) continue
         // point of the cube
-        // const x = cosB*Xaxis + sinB*Yaxis
-        // const y = -cosA*sinB*Xaxis + cosA*cosB*Yaxis + sinA*Zaxis
-        // const z = Zoff + sinA*sinB*Xaxis - cosB*sinA*Yaxis + cosA*Zaxis
-        const x = Xaxis
-        const y = cosA*Yaxis + sinA*Zaxis
-        const z = Zoff - sinA*Yaxis + cosA*Zaxis
+        const x = cosB*xs + sinB*ys
+        const y = -cosA*sinB*xs + cosA*cosB*ys + sinA*zs
+        const z = Zoff + sinA*sinB*xs - cosB*sinA*ys + cosA*zs
 
         // screen projection
         const xProj = Math.round(screen_size / 2 + K1 * x / z)
         const yProj = Math.round(screen_size / 2 - K1 * y / z)
-
+      
         // Luminance with light vector: (0, 1, -1)
-        let L = 0
-        if (Math.abs(Xaxis) === CUBE_SIZE / 2)
-          L = 0
-        else if (Math.abs(Yaxis) === CUBE_SIZE / 2)
-          L = cosA
-        else
-          L = -sinA
-
-        if (L < 0) continue
-
+        let L = (cosA*cosB - sinA)*normal[1] + (cosA - sinA*cosB)*normal[2]
+      
+        // if (L < 0) continue
+      
         // Z-buffer
         if (1/z < zBuffer[yProj][xProj]) continue
         zBuffer[yProj][xProj] = 1/z
-        const luminanceIndex = Math.round(L*8) 
+        // const luminanceIndex = Math.round(L*8) 
+        const luminanceIndex = 0
         output[yProj][xProj] = ".,-~:;=!*#$@"[luminanceIndex]
       }
     }
@@ -116,13 +148,14 @@ function animateCube(A, B) {
 }
 
 
+
 // Launch Animation
 let animProgress = 0
 const STEP = 0.05
 const frequency = 25
 
 setInterval(() => {
-  animateDonut(animProgress, animProgress/2)
-  // animateCube(animProgress, animProgress/2)
+  // animateDonut(animProgress, animProgress/2)
+  animateCube(animProgress, animProgress/2)
   animProgress += STEP
 }, 1000/frequency)
