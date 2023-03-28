@@ -11,7 +11,25 @@
 </head>
 <body>
   <div id="render-wrapper">
-  <div id="render-div"></div>
+    <div id="settings-panel">
+      <h2>Settings</h2>
+      <div class="shape">
+        <h3>Shape</h3>
+        <div>
+          <input name="shape" type="radio" id="torus" value="torus" checked>
+          <label for="torus">Torus</label>
+        </div>
+        <div>
+          <input name="shape" type="radio" value="cube" id="cube">
+          <label for="cube">Cube</label>
+        </div>
+        <div>
+          <input name="shape" type="radio" value="cone" id="cone">
+          <label for="cone">Cone</label>
+        </div>
+      </div>
+    </div>
+    <div id="render-div"></div>
   </div>
 </body>
 </html>

@@ -1,16 +1,40 @@
 // ASCII Donut Javascript Code inspired from https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
 
 const screen_size = 50 // height and width of projection screen
-
 const R1 = 1 // radius of the tube (tore) 
 const R2 = 2 // radius of the tore (minus 2*R1)
-const Zoff = 8 // distance between the projection screen and the tore
+const Zoff = 8 // distance between the projection screen and the object
 const K1 = screen_size * Zoff * 3 / (8 * (R1 + R2)) // distance between the camera and the projection screen
-
 const THETA_STEP = 0.02
 const PHI_STEP = 0.01
+const CUBE_SIZE = 4
+const CUBE_STEP = 0.05
 
 const renderContainer = document.querySelector("#render-div")
+const shapeInputs = document.querySelectorAll('input[name="shape"]');
+
+let shape = "torus"
+
+shapeInputs.forEach(input => input.addEventListener("click", () => (shape = input.value)))
+
+// Launch Animation
+let animProgress = 0
+const STEP = 0.05
+const frequency = 25
+
+setInterval(() => {
+  switch (shape) {
+    case 'torus':
+      animateDonut(animProgress, animProgress/2)
+      break;
+    case 'cube':
+      animateCube(animProgress, animProgress/2)
+      break;
+    default: 
+      animateDonut(animProgress, animProgress/2)
+  }
+  animProgress += STEP
+}, 1000/frequency)
 
 function animateDonut(A, B) {
 
@@ -56,9 +80,6 @@ function animateDonut(A, B) {
   }
   renderContainer.innerHTML = ASCII_result
 }
-
-const CUBE_SIZE = 4
-const CUBE_STEP = 0.05
 
 function animateCube(A, B) {
 
@@ -146,16 +167,3 @@ function animateCube(A, B) {
   }
   renderContainer.innerHTML = ASCII_result
 }
-
-
-
-// Launch Animation
-let animProgress = 0
-const STEP = 0.05
-const frequency = 25
-
-setInterval(() => {
-  // animateDonut(animProgress, animProgress/2)
-  animateCube(animProgress, animProgress/2)
-  animProgress += STEP
-}, 1000/frequency)
