@@ -4,7 +4,7 @@ const screen_size = 50 // height and width of projection screen
 const R1 = 1 // radius of the tube (tore) 
 const R2 = 2 // radius of the tore (minus 2*R1)
 const Zoff = 8 // distance between the projection screen and the object
-const K1 = screen_size * Zoff * 3 / (8 * (R1 + R2)) // distance between the camera and the projection screen
+const K1 = screen_size * Zoff * 3 / (8 * (R1 + R2)) // distance between the camera and the projection screen => faire pour chaque shape
 
 // Torus parameters
 const THETA_STEP = 0.02
@@ -17,7 +17,7 @@ const CUBE_STEP = 0.05
 const renderContainer = document.querySelector("#render-div")
 const shapeInputs = document.querySelectorAll('input[name="shape"]');
 
-let shape = "cone"
+let shape = "torus"
 
 shapeInputs.forEach(input => input.addEventListener("click", () => (shape = input.value)))
 
@@ -40,6 +40,7 @@ setInterval(() => {
   animProgress += STEP
 }, 1000/frequency)
 
+
 function animateDonut(A, B) {
 
   const output = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => '&nbsp;'))
@@ -57,7 +58,7 @@ function animateDonut(A, B) {
       const cosPhi = Math.cos(phi)
       const sinPhi = Math.sin(phi)
 
-      // animeted point of the tore
+      // animated point of the tore
       const x = (R2 + R1*cosTheta)*(cosB*cosPhi + sinA*sinB*sinPhi) - R1*cosA*sinB*sinTheta
       const y = (R2 + R1*cosTheta)*(cosPhi*sinB - cosB*sinA*sinPhi) + R1*cosA*cosB*sinTheta
       const z = Zoff + cosA*(R2 + R1*cosTheta)*sinPhi + R1*sinA*sinTheta
@@ -68,21 +69,11 @@ function animateDonut(A, B) {
 
       // Luminance with light vector: (0, 1, -1)
       const L = cosPhi*cosTheta*sinB - cosA*cosTheta*sinPhi - sinA*sinTheta + cosB*(cosA*sinTheta - cosTheta*sinA*sinPhi)
-      if (L < 0) continue
 
-      // Z-buffer
-      if (1/z < zBuffer[yProj][xProj]) continue
-      zBuffer[yProj][xProj] = 1/z
-      const luminanceIndex = Math.round(L*8) 
-      output[yProj][xProj] = ".,-~:;=!*#$@"[luminanceIndex]
+      updateZbuffer(L, z, xProj, yProj, zBuffer, output)
     }
   }
-  // Print ASCII in the DOM
-  let ASCII_result = ""
-  for (let i = 0; i < screen_size ; i++) {
-    ASCII_result += output[i].join('') + "<br>"
-  }
-  renderContainer.innerHTML = ASCII_result
+  printASCII_DOM(output, renderContainer)
 }
 
 function animateCube(A, B) {
@@ -99,47 +90,8 @@ function animateCube(A, B) {
     for (let a = 0; a < CUBE_SIZE; a += CUBE_STEP){
       for (let b = 0; b < CUBE_SIZE; b += CUBE_STEP)
       {
-        let xs, ys, zs
-        let normal = []
 
-        switch (side) {
-          case 0 :
-            xs = a - CUBE_SIZE / 2
-            ys = b - CUBE_SIZE / 2
-            zs = - CUBE_SIZE / 2
-            normal = [0, 0, -1]
-            break
-          case 1 :
-            xs = a - CUBE_SIZE / 2
-            ys = CUBE_SIZE / 2
-            zs = b - CUBE_SIZE / 2
-            normal = [0, 1, 0]
-            break
-          case 2 :
-            xs = CUBE_SIZE / 2
-            ys = a - CUBE_SIZE / 2
-            zs = b - CUBE_SIZE / 2
-            normal = [1, 0, 0]
-            break
-          case 3 :
-            xs = a - CUBE_SIZE / 2
-            ys = - CUBE_SIZE / 2
-            zs = b - CUBE_SIZE / 2
-            normal = [0, -1, 0]
-            break
-          case 4 :
-            xs = a - CUBE_SIZE / 2
-            ys = b - CUBE_SIZE / 2
-            zs = CUBE_SIZE / 2
-            normal = [0, 0, 1]
-            break
-          case 5 :
-            xs = - CUBE_SIZE / 2
-            ys = a - CUBE_SIZE / 2
-            zs = b - CUBE_SIZE / 2
-            normal = [-1, 0, 0]
-            break
-        }
+        const [xs, ys, zs, normal] = getCubeSideInfos(a, b, side)
         
         // point of the cube
         const x = cosB*xs + sinB*ys
@@ -164,12 +116,51 @@ function animateCube(A, B) {
       }
     }
   }
-  // Print ASCII in the DOM
-  let ASCII_result = ""
-  for (let i = 0; i < screen_size ; i++) {
-    ASCII_result += output[i].join('') + "<br>"
+  printASCII_DOM(output, renderContainer)
+}
+
+function getCubeSideInfos(a, b, side) {
+  let xs, ys, zs
+  let normal = []
+  switch (side) {
+    case 0 :
+      xs = a - CUBE_SIZE / 2
+      ys = b - CUBE_SIZE / 2
+      zs = - CUBE_SIZE / 2
+      normal = [0, 0, -1]
+      break
+    case 1 :
+      xs = a - CUBE_SIZE / 2
+      ys = CUBE_SIZE / 2
+      zs = b - CUBE_SIZE / 2
+      normal = [0, 1, 0]
+      break
+    case 2 :
+      xs = CUBE_SIZE / 2
+      ys = a - CUBE_SIZE / 2
+      zs = b - CUBE_SIZE / 2
+      normal = [1, 0, 0]
+      break
+    case 3 :
+      xs = a - CUBE_SIZE / 2
+      ys = - CUBE_SIZE / 2
+      zs = b - CUBE_SIZE / 2
+      normal = [0, -1, 0]
+      break
+    case 4 :
+      xs = a - CUBE_SIZE / 2
+      ys = b - CUBE_SIZE / 2
+      zs = CUBE_SIZE / 2
+      normal = [0, 0, 1]
+      break
+    case 5 :
+      xs = - CUBE_SIZE / 2
+      ys = a - CUBE_SIZE / 2
+      zs = b - CUBE_SIZE / 2
+      normal = [-1, 0, 0]
+      break
   }
-  renderContainer.innerHTML = ASCII_result
+  return [xs, ys, zs, normal]
 }
 
 // Cone parameters
@@ -248,10 +239,23 @@ function animateCone(A, B) { //
       }
     }
   }
-  // Print ASCII in the DOM
+  printASCII_DOM(output, renderContainer)
+}
+
+
+function updateZbuffer(L, z, xProj, yProj, zBuffer, output) {
+  if (L < 0)return
+  if (1/z < zBuffer[yProj][xProj]) return
+
+  zBuffer[yProj][xProj] = 1/z
+  const luminanceIndex = Math.round(L*8) 
+  output[yProj][xProj] = ".,-~:;=!*#$@"[luminanceIndex]
+}
+
+function printASCII_DOM(output, renderElement) {
   let ASCII_result = ""
   for (let i = 0; i < screen_size ; i++) {
     ASCII_result += output[i].join('') + "<br>"
   }
-  renderContainer.innerHTML = ASCII_result
+  renderElement.innerHTML = ASCII_result
 }
