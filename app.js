@@ -103,15 +103,16 @@ function animateCube(A, B) {
         const yProj = Math.round(screen_size / 2 - K1 * y / z)
       
         // Luminance with light vector: (0, 1, -1)
-        let L = (cosA*cosB - sinA)*normal[1] + (cosA - sinA*cosB)*normal[2]
-      
-        // if (L < 0) continue
-      
+        let L = -(cosA*sinB + sinA*sinB)*normal[0] + (cosA*cosB + cosB*sinA)*normal[1] + (sinA - cosA)*normal[2]
+        
         // Z-buffer
         if (1/z < zBuffer[yProj][xProj]) continue
         zBuffer[yProj][xProj] = 1/z
-        // const luminanceIndex = Math.round(L*8) 
-        const luminanceIndex = 0
+        if (L < 0){
+          output[yProj][xProj] = "."
+          continue
+        }
+        const luminanceIndex = Math.round(L*8)
         output[yProj][xProj] = ".,-~:;=!*#$@"[luminanceIndex]
       }
     }
@@ -164,8 +165,8 @@ function getCubeSideInfos(a, b, side) {
 }
 
 // Cone parameters
-CONE_HEIGHT = 3
-CONE_RADIUS = 1.5
+CONE_HEIGHT = 4
+CONE_RADIUS = 2
 CONE_ANGLE_STEP = 0.02
 CONE_RADIUS_STEP = 0.02
 CONE_HEIGHT_STEP = 0.02
