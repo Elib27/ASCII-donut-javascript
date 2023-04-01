@@ -24,7 +24,6 @@ body {
 
 #settings-panel {
   box-sizing: border-box;
-  height: 200px;
   width: 200px;
   padding: 20px;
   background-color: gray;
@@ -39,7 +38,7 @@ body {
   text-align: center;
 }
 #settings-panel h3 {
-  margin: 0 0 10px 0;
+  margin: 20px 0 10px 0;
   font-size: 18px;
 }
 #settings-panel label {
@@ -47,4 +46,7 @@ body {
 }
 .shape > div * {
   cursor: pointer;
+}
+#settings-panel input[type="range"] {
+  width: 100%;
 }

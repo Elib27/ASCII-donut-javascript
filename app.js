@@ -1,14 +1,14 @@
 // ASCII Donut Javascript Code inspired from https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
 
-const screen_size = 50 // height and width of projection screen
-const Zoff = 8 // distance between the projection screen and the object
+let screen_size = 50 // height and width of projection screen
+let Zoff = 8 // distance between the projection screen and the object
 
 // Torus parameters
 const TORE_R1 = 1 // radius of the tube (tore) 
 const TORE_R2 = 2 // radius of the tore (minus 2*TORE_R1)
 const THETA_STEP = 0.04
-const PHI_STEP = 0.02
-const K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2)) // distance between the camera and the projection screen
+const PHI_STEP = 0.01
+let K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2)) // distance between the camera and the projection screen
 
 // Cube parameters
 const CUBE_SIZE = 4
@@ -17,37 +17,66 @@ const CUBE_STEP = 0.05
 // Cone parameters
 CONE_HEIGHT = 4
 CONE_RADIUS = 2
-CONE_ANGLE_STEP = 0.04
+CONE_ANGLE_STEP = 0.02
 CONE_RADIUS_STEP = 0.04
-CONE_HEIGHT_STEP = 0.08
+CONE_HEIGHT_STEP = 0.02
 
 const renderContainer = document.querySelector("#render-div")
-const shapeInputs = document.querySelectorAll('input[name="shape"]');
+const shapeInputs = document.querySelectorAll('input[name="shape"]')
+const sizeRange = document.querySelector('input[name="size"]')
+const zoffsetRange = document.querySelector('input[name="zoffset"]')
+const xrotationRange = document.querySelector('input[name="xrotation"]')
+const zrotationRange = document.querySelector('input[name="zrotation"]')
 
 let shape = "torus"
 
-shapeInputs.forEach(input => input.addEventListener("click", () => (shape = input.value)))
-
 // Launch Animation
-let animProgress = 0
-const STEP = 0.05
+let XrotationProgress = 0
+let ZrotationProgress = 0
+let XrotationStep = 0.05
+let ZrotationStep = 0.025
 const frequency = 25
 
 setInterval(() => {
   switch (shape) {
     case 'torus':
-      animateDonut(animProgress, animProgress/2)
+      animateDonut(XrotationProgress, ZrotationProgress)
       break;
     case 'cube':
-      animateCube(animProgress, animProgress/2)
+      animateCube(XrotationProgress, ZrotationProgress)
       break;
     case 'cone':
-      animateCone(animProgress, animProgress/2)
+      animateCone(XrotationProgress, ZrotationProgress)
       break;
   }
-  animProgress += STEP
+  XrotationProgress += XrotationStep
+  ZrotationProgress += ZrotationStep
 }, 1000/frequency)
 
+// Settings
+shapeInputs.forEach(input => input.addEventListener("click", () => (shape = input.value)))
+sizeRange.addEventListener("input", updateScreenSize)
+zoffsetRange.addEventListener("input", updateZoffset)
+xrotationRange.addEventListener("input", updateXrotation)
+zrotationRange.addEventListener("input", updateZrotation)
+
+function updateScreenSize() {
+  screen_size = parseInt(sizeRange.value)
+  K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2))
+}
+
+function updateZoffset() {
+  Zoff = parseInt(zoffsetRange.value)
+  K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2))
+}
+
+function updateXrotation() {
+  XrotationStep = parseInt(xrotationRange.value) / 100
+}
+
+function updateZrotation() {
+  ZrotationStep = parseInt(zrotationRange.value) / 100
+}
 
 /**** Animation functions ****/
 

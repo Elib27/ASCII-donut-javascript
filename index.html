@@ -27,6 +27,23 @@
           <input name="shape" type="radio" value="cone" id="cone">
           <label for="cone">Cone</label>
         </div>
+        <h3>Animation</h3>
+        <div>
+          <label for="size">Size</label>
+          <input name="size" type="range" min="10" max="70" value="50" id="size">
+        </div>
+        <div>
+          <label for="zoffset">Z offset</label>
+          <input name="zoffset" type="range" min="5" max="25" value="8" id="zoffset">
+        </div>
+        <div>
+          <label for="xrotation">X rotation speed</label>
+          <input name="xrotation" type="range" min="0" max="20" step="0.1" value="5" id="xrotation">
+        </div>
+        <div>
+          <label for="zrotation">Z rotation speed</label>
+          <input name="zrotation" type="range" min="0" max="20" step="0.1" value="2.5" id="zrotation">
+        </div>
       </div>
     </div>
     <div id="render-div"></div>
