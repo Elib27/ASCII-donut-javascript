@@ -1,4 +1,6 @@
-// ASCII Donut Javascript Code inspired from https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
+// ASCII Shapes Javascript Code inspired from https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
+
+let shape = "torus"
 
 let screen_size = 50 // height and width of projection screen
 let Zoff = 8 // distance between the projection screen and the object
@@ -21,14 +23,13 @@ CONE_ANGLE_STEP = 0.02
 CONE_RADIUS_STEP = 0.04
 CONE_HEIGHT_STEP = 0.02
 
+// Selectors
 const renderContainer = document.querySelector("#render-div")
 const shapeInputs = document.querySelectorAll('input[name="shape"]')
 const sizeRange = document.querySelector('input[name="size"]')
 const zoffsetRange = document.querySelector('input[name="zoffset"]')
 const xrotationRange = document.querySelector('input[name="xrotation"]')
 const zrotationRange = document.querySelector('input[name="zrotation"]')
-
-let shape = "torus"
 
 // Launch Animation
 let XrotationProgress = 0
@@ -54,7 +55,11 @@ setInterval(() => {
 }, 1000/frequency)
 
 // Settings
-shapeInputs.forEach(input => input.addEventListener("click", () => (shape = input.value)))
+shapeInputs.forEach(input => 
+  input.addEventListener("click", () => {
+    shape = input.value
+  })
+)
 sizeRange.addEventListener("input", updateScreenSize)
 zoffsetRange.addEventListener("input", updateZoffset)
 xrotationRange.addEventListener("input", updateXrotation)
@@ -70,20 +75,16 @@ function updateZoffset() {
   K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2))
 }
 
-function updateXrotation() {
-  XrotationStep = parseInt(xrotationRange.value) / 100
-}
+const updateXrotation = () => (XrotationStep = parseInt(xrotationRange.value) / 100)
 
-function updateZrotation() {
-  ZrotationStep = parseInt(zrotationRange.value) / 100
-}
+const updateZrotation = () => (ZrotationStep = parseInt(zrotationRange.value) / 100)
 
 /**** Animation functions ****/
 
 function animateDonut(A, B) {
 
-  const output = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => '&nbsp;'))
-  const zBuffer = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => 0))
+  const output = Array.from({length: screen_size}, () => Array(screen_size).fill('&nbsp;'))
+  const zBuffer = Array.from({length: screen_size}, () => Array(screen_size).fill(0))
 
   const cosA = Math.cos(A)
   const sinA = Math.sin(A)
@@ -117,8 +118,8 @@ function animateDonut(A, B) {
 
 function animateCube(A, B) {
 
-  const output = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => '&nbsp;'))
-  const zBuffer = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => 0))
+  const output = Array.from({length: screen_size}, () => Array(screen_size).fill('&nbsp;'))
+  const zBuffer = Array.from({length: screen_size}, () => Array(screen_size).fill(0))
 
   const cosA = Math.cos(A)
   const sinA = Math.sin(A)
@@ -197,8 +198,8 @@ function getCubeSideInfos(a, b, side) {
 
 function animateCone(A, B) {
 
-  const output = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => '&nbsp;'))
-  const zBuffer = Array.from({length: screen_size}, () => Array.from({length: screen_size}, () => 0))
+  const output = Array.from({length: screen_size}, () => Array(screen_size).fill('&nbsp;'))
+  const zBuffer = Array.from({length: screen_size}, () => Array(screen_size).fill(0))
 
   const cosA = Math.cos(A)
   const sinA = Math.sin(A)
