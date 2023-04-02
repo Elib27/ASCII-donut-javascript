@@ -27,6 +27,7 @@ body {
   width: 200px;
   padding: 20px;
   background-color: gray;
+  user-select: none;
   border-radius: 10px;
   position: absolute;
   top: 10px;
@@ -47,6 +48,10 @@ body {
 .shape > div * {
   cursor: pointer;
 }
+#settings-panel .range-container {
+  margin-bottom: 6px;
+}
+
 #settings-panel input[type="range"] {
   width: 100%;
 }
