@@ -6,22 +6,24 @@ let screen_size = 50 // height and width of projection screen
 let Zoff = 8 // distance between the projection screen and the object
 
 // Torus parameters
-const TORE_R1 = 1 // radius of the tube (tore) 
-const TORE_R2 = 2 // radius of the tore (minus 2*TORE_R1)
+const TORUS_R1 = 1 // radius of the tube 
+const TORUS_R2 = 2 // radius of the torus (minus 2*TORUS_R1)
 const THETA_STEP = 0.04
 const PHI_STEP = 0.01
-let K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2)) // distance between the camera and the projection screen
+let TORUS_K1 = screen_size * Zoff * 3 / (8 * (TORUS_R1 + TORUS_R2)) // distance between the camera and the projection screen
 
 // Cube parameters
 const CUBE_SIZE = 4
 const CUBE_STEP = 0.05
+let CUBE_K1 = screen_size * Zoff * 3 / (8 * CUBE_SIZE)
 
 // Cone parameters
-CONE_HEIGHT = 4
-CONE_RADIUS = 2
-CONE_ANGLE_STEP = 0.02
-CONE_RADIUS_STEP = 0.04
-CONE_HEIGHT_STEP = 0.02
+const CONE_HEIGHT = 4
+const CONE_RADIUS = 2
+const CONE_ANGLE_STEP = 0.02
+const CONE_RADIUS_STEP = 0.04
+const CONE_HEIGHT_STEP = 0.02
+let CONE_K1 = screen_size * Zoff * 3 / (8 * CONE_HEIGHT)
 
 // Selectors
 const renderContainer = document.querySelector("#render-div")
@@ -55,6 +57,23 @@ setInterval(() => {
 }, 1000/frequency)
 
 // Settings
+function updateScreenSize() {
+  screen_size = parseInt(sizeRange.value)
+  TORUS_K1 = screen_size * Zoff * 3 / (8 * (TORUS_R1 + TORUS_R2))
+  CUBE_K1 = screen_size * Zoff * 3 / (8 * CUBE_SIZE)
+  CONE_K1 = screen_size * Zoff * 3 / (8 * CONE_HEIGHT)
+}
+
+function updateZoffset() {
+  Zoff = parseInt(zoffsetRange.value)
+  TORUS_K1 = screen_size * Zoff * 3 / (8 * (TORUS_R1 + TORUS_R2))
+  CUBE_K1 = screen_size * Zoff * 3 / (8 * CUBE_SIZE)
+  CONE_K1 = screen_size * Zoff * 3 / (8 * CONE_HEIGHT)
+}
+
+const updateXrotation = () => (XrotationStep = parseInt(xrotationRange.value) / 100)
+const updateZrotation = () => (ZrotationStep = parseInt(zrotationRange.value) / 100)
+
 shapeInputs.forEach(input => 
   input.addEventListener("click", () => {
     shape = input.value
@@ -65,24 +84,10 @@ zoffsetRange.addEventListener("input", updateZoffset)
 xrotationRange.addEventListener("input", updateXrotation)
 zrotationRange.addEventListener("input", updateZrotation)
 
-function updateScreenSize() {
-  screen_size = parseInt(sizeRange.value)
-  K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2))
-}
-
-function updateZoffset() {
-  Zoff = parseInt(zoffsetRange.value)
-  K1 = screen_size * Zoff * 3 / (8 * (TORE_R1 + TORE_R2))
-}
-
-const updateXrotation = () => (XrotationStep = parseInt(xrotationRange.value) / 100)
-
-const updateZrotation = () => (ZrotationStep = parseInt(zrotationRange.value) / 100)
 
 /**** Animation functions ****/
 
 function animateDonut(A, B) {
-
   const output = Array.from({length: screen_size}, () => Array(screen_size).fill('&nbsp;'))
   const zBuffer = Array.from({length: screen_size}, () => Array(screen_size).fill(0))
 
@@ -98,14 +103,14 @@ function animateDonut(A, B) {
       const cosPhi = Math.cos(phi)
       const sinPhi = Math.sin(phi)
 
-      // animated point of the tore
-      const x = (TORE_R2 + TORE_R1*cosTheta)*(cosB*cosPhi + sinA*sinB*sinPhi) - TORE_R1*cosA*sinB*sinTheta
-      const y = (TORE_R2 + TORE_R1*cosTheta)*(cosPhi*sinB - cosB*sinA*sinPhi) + TORE_R1*cosA*cosB*sinTheta
-      const z = Zoff + cosA*(TORE_R2 + TORE_R1*cosTheta)*sinPhi + TORE_R1*sinA*sinTheta
+      // animated point of the TORUS
+      const x = (TORUS_R2 + TORUS_R1*cosTheta)*(cosB*cosPhi + sinA*sinB*sinPhi) - TORUS_R1*cosA*sinB*sinTheta
+      const y = (TORUS_R2 + TORUS_R1*cosTheta)*(cosPhi*sinB - cosB*sinA*sinPhi) + TORUS_R1*cosA*cosB*sinTheta
+      const z = Zoff + cosA*(TORUS_R2 + TORUS_R1*cosTheta)*sinPhi + TORUS_R1*sinA*sinTheta
 
       // screen projection
-      const xProj = Math.round(screen_size / 2 + K1 * x / z)
-      const yProj = Math.round(screen_size / 2 - K1 * y / z)
+      const xProj = Math.round(screen_size / 2 + TORUS_K1 * x / z)
+      const yProj = Math.round(screen_size / 2 - TORUS_K1 * y / z)
 
       // Luminance with light vector: (0, 1, -1)
       const L = cosPhi*cosTheta*sinB - cosA*cosTheta*sinPhi - sinA*sinTheta + cosB*(cosA*sinTheta - cosTheta*sinA*sinPhi)
@@ -117,7 +122,6 @@ function animateDonut(A, B) {
 }
 
 function animateCube(A, B) {
-
   const output = Array.from({length: screen_size}, () => Array(screen_size).fill('&nbsp;'))
   const zBuffer = Array.from({length: screen_size}, () => Array(screen_size).fill(0))
 
@@ -139,8 +143,8 @@ function animateCube(A, B) {
         const z = Zoff + sinA*sinB*xs - cosB*sinA*ys + cosA*zs
 
         // screen projection
-        const xProj = Math.round(screen_size / 2 + K1 * x / z)
-        const yProj = Math.round(screen_size / 2 - K1 * y / z)
+        const xProj = Math.round(screen_size / 2 + CUBE_K1 * x / z)
+        const yProj = Math.round(screen_size / 2 - CUBE_K1 * y / z)
       
         // Luminance with light vector: (0, 1, -1)
         let L = -(cosA*sinB + sinA*sinB)*normal[0] + (cosA*cosB + cosB*sinA)*normal[1] + (sinA - cosA)*normal[2]
@@ -197,7 +201,6 @@ function getCubeSideInfos(a, b, side) {
 }
 
 function animateCone(A, B) {
-
   const output = Array.from({length: screen_size}, () => Array(screen_size).fill('&nbsp;'))
   const zBuffer = Array.from({length: screen_size}, () => Array(screen_size).fill(0))
 
@@ -223,8 +226,8 @@ function animateCone(A, B) {
           const z = Zoff + sinA*sinB*xs - cosB*sinA*ys + cosA*zs
 
           // screen projection
-          const xProj = Math.round(screen_size / 2 + K1 * x / z)
-          const yProj = Math.round(screen_size / 2 - K1 * y / z)
+          const xProj = Math.round(screen_size / 2 + CONE_K1 * x / z)
+          const yProj = Math.round(screen_size / 2 - CONE_K1 * y / z)
 
           // Luminance with light vector: (0, 1, -1)
           const L = -(cosA + sinA)*cosB
@@ -244,8 +247,8 @@ function animateCone(A, B) {
         const z = Zoff + sinA*sinB*xs - cosB*sinA*ys + cosA*zs
   
         // screen projection
-        const xProj = Math.round(screen_size / 2 + K1 * x / z)
-        const yProj = Math.round(screen_size / 2 - K1 * y / z)
+        const xProj = Math.round(screen_size / 2 + CONE_K1 * x / z)
+        const yProj = Math.round(screen_size / 2 - CONE_K1 * y / z)
   
         // Luminance with light vector: (0, 1, -1)
         const L = -cosA*sinB*cosTheta - (CONE_RADIUS/CONE_HEIGHT)*cosA*cosB + sinA*sinTheta - (sinA*sinB*cosTheta + (CONE_RADIUS/CONE_HEIGHT)*sinA*cosB + cosA*sinTheta)
@@ -259,6 +262,7 @@ function animateCone(A, B) {
 
 
 function addASCIItoOutput(L, z, xProj, yProj, zBuffer, output) {
+  if (xProj < 0 || xProj >= screen_size || yProj < 0 || yProj >= screen_size) return
   if (1/z < zBuffer[yProj][xProj]) return
   zBuffer[yProj][xProj] = 1/z
   output[yProj][xProj] = convertLuminanceToASCII(L)
@@ -278,3 +282,11 @@ function printASCII_DOM(output, renderElement) {
   }
   renderElement.innerHTML = ASCII_result
 }
+
+
+// Loader
+const loader = document.querySelector('.loader')
+
+window.addEventListener('load', () => {
+  loader.classList.add('hidden')
+})
