@@ -14,16 +14,16 @@ let TORUS_K1 = screen_size * Zoff * 3 / (8 * (TORUS_R1 + TORUS_R2)) // distance 
 
 // Cube parameters
 const CUBE_SIZE = 4
-const CUBE_STEP = 0.05
-let CUBE_K1 = screen_size * Zoff * 3 / (8 * CUBE_SIZE)
+const CUBE_STEP = 0.04
+let CUBE_K1 = screen_size * Zoff * 3 / (7 * CUBE_SIZE)
 
 // Cone parameters
-const CONE_HEIGHT = 4
+const CONE_HEIGHT = 5
 const CONE_RADIUS = 2
 const CONE_ANGLE_STEP = 0.02
 const CONE_RADIUS_STEP = 0.04
 const CONE_HEIGHT_STEP = 0.02
-let CONE_K1 = screen_size * Zoff * 3 / (8 * CONE_HEIGHT)
+let CONE_K1 = screen_size * Zoff / (2 * CONE_HEIGHT)
 
 // Selectors
 const renderContainer = document.querySelector("#render-div")
@@ -60,15 +60,15 @@ setInterval(() => {
 function updateScreenSize() {
   screen_size = parseInt(sizeRange.value)
   TORUS_K1 = screen_size * Zoff * 3 / (8 * (TORUS_R1 + TORUS_R2))
-  CUBE_K1 = screen_size * Zoff * 3 / (8 * CUBE_SIZE)
-  CONE_K1 = screen_size * Zoff * 3 / (8 * CONE_HEIGHT)
+  CUBE_K1 = screen_size * Zoff * 3 / (7 * CUBE_SIZE)
+  CONE_K1 = screen_size * Zoff / (2 * CONE_HEIGHT)
 }
 
 function updateZoffset() {
   Zoff = parseInt(zoffsetRange.value)
   TORUS_K1 = screen_size * Zoff * 3 / (8 * (TORUS_R1 + TORUS_R2))
-  CUBE_K1 = screen_size * Zoff * 3 / (8 * CUBE_SIZE)
-  CONE_K1 = screen_size * Zoff * 3 / (8 * CONE_HEIGHT)
+  CUBE_K1 = screen_size * Zoff * 3 / (7 * CUBE_SIZE)
+  CONE_K1 = screen_size * Zoff / (2 * CONE_HEIGHT)
 }
 
 const updateXrotation = () => (XrotationStep = parseInt(xrotationRange.value) / 100)
