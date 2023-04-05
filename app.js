@@ -251,7 +251,7 @@ function animateCone(A, B) {
         const yProj = Math.round(screen_size / 2 - CONE_K1 * y / z)
   
         // Luminance with light vector: (0, 1, -1)
-        const L = -cosA*sinB*cosTheta - (CONE_RADIUS/CONE_HEIGHT)*cosA*cosB + sinA*sinTheta - (sinA*sinB*cosTheta + (CONE_RADIUS/CONE_HEIGHT)*sinA*cosB + cosA*sinTheta)
+        const L = 11*(-cosA*sinB*cosTheta - (CONE_RADIUS/CONE_HEIGHT)*cosA*cosB + sinA*sinTheta - (sinA*sinB*cosTheta + (CONE_RADIUS/CONE_HEIGHT)*sinA*cosB + cosA*sinTheta)) / 12
         
         addASCIItoOutput(L, z, xProj, yProj, zBuffer, output)
       }
@@ -270,8 +270,7 @@ function addASCIItoOutput(L, z, xProj, yProj, zBuffer, output) {
 
 function convertLuminanceToASCII(L) {
   if (L < 0) return "."
-  let luminanceIndex = Math.round(L*8)
-  if (luminanceIndex > 11) luminanceIndex = 11
+  const luminanceIndex = Math.round(L*8)
   return ".,-~:;=!*#$@"[luminanceIndex]
 }
 
